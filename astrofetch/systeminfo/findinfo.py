@@ -179,28 +179,28 @@ def getMem(memType):
 
     if memType == 'mem':
         totalMem = memInfo[1]
-        usedMem = memInfo[4]
-        cachedMem = memInfo[13]
+        availMem = memInfo[7]
     elif memType == 'swap':
         totalMem = memInfo[43]
-        usedMem = memInfo[46]
-        cachedMem = 0
+        availMem = memInfo[46]
 
-    memInfo = [totalMem, usedMem, cachedMem]
+    memInfo = [totalMem, availMem]
     memoryGb = []
 
-    for item in memInfo:
-        item = int(item) / 1024000
-        item = round(item, 1)
-        memoryGb.append(item)
+    for memValue in memInfo:
+        memValue = round(int(memValue) / 1024000, 1)
+        memoryGb.append(memValue)
 
-    totalMem = str(round(memoryGb[0])) + 'G ('
-    usedMem = '%.1f' % (memoryGb[0] - memoryGb[1] - memoryGb[2])
-    if usedMem[0] == '0':
-        totalMem = totalMem[:-2]
+    totalMem = round(memoryGb[0])
+    availMem = memoryGb[1]
+
+    if totalMem == round(availMem):
         usedMem = ''
+        totalMem = str(totalMem) + 'G'
     else:
-        usedMem = usedMem + "G used)"
+        usedMem = totalMem - availMem
+        totalMem = str(totalMem) + 'G ('
+        usedMem = '%.1f' % usedMem + "G used)"
 
     memory = totalMem + usedMem
 
