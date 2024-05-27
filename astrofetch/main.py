@@ -18,5 +18,7 @@ def matchCliArgs(arguments):
     elif arguments.info:
         showResult = True
         search.processInput(arguments.info, arguments.unicode, showResult)
+    elif arguments.verbose:
+        build.fullFetch(currentSeason, formatinfo.verboseFormat(currentSeason))
     else:
         build.fullFetch(currentSeason, formatinfo.fullFormat(currentSeason))

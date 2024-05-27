@@ -27,6 +27,10 @@ parser.add_argument(
     nargs='+', 
     metavar='', 
     help='search for sign or date information (eg: leo) (jan 1)')
+parser.add_argument(
+    '-v', '--verbose',
+    action='store_true',
+    help='show more system specs')
 
 args = parser.parse_args()
 
@@ -36,5 +40,9 @@ if args.small:
         exit(errorMsg)
 if args.mini:
     if args.info:
+        print(argComboErr)
+        exit(errorMsg)
+if args.verbose:
+    if args.info or args.mini or args.small:
         print(argComboErr)
         exit(errorMsg)

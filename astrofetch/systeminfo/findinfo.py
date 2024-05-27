@@ -172,3 +172,36 @@ def getDate():
     day = fulldate.strftime("%d")           # = 27
     time = fulldate.strftime("%H:%M")       # = 10:45
     return month, day, time
+
+def getMem(memType):
+    with open("/proc/meminfo") as memoryInfoFile:
+        memInfo = memoryInfoFile.read().split()
+
+    if memType == 'mem':
+        totalMem = memInfo[1]
+        usedMem = memInfo[4]
+        cachedMem = memInfo[13]
+    elif memType == 'swap':
+        totalMem = memInfo[43]
+        usedMem = memInfo[46]
+        cachedMem = 0
+
+    memInfo = [totalMem, usedMem, cachedMem]
+    memoryGb = []
+
+    for item in memInfo:
+        item = int(item) / 1024000
+        item = round(item, 1)
+        memoryGb.append(item)
+
+    totalMem = str(round(memoryGb[0])) + 'G ('
+    usedMem = '%.1f' % (memoryGb[0] - memoryGb[1] - memoryGb[2])
+    if usedMem[0] == '0':
+        totalMem = totalMem[:-2]
+        usedMem = ''
+    else:
+        usedMem = usedMem + "G used)"
+
+    memory = totalMem + usedMem
+
+    return memory

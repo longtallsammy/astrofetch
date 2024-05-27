@@ -12,6 +12,8 @@ kernel = findinfo.getKernel()
 shell = findinfo.getShell()
 machine = findinfo.getMachineFamily()
 desktop = findinfo.getDesktopEnv()
+memory = findinfo.getMem('mem')
+swap = findinfo.getMem('swap')
 
 def boldenText(text, color):
     text = color + '\033[1m' + text + '\033[0m'
@@ -53,6 +55,45 @@ def fullFormat(sign): #organize this so its quicker, ur running 2 ifs. match may
     formattedSystemInfo = (systemPortion + astrologyPortion)
 
     return formattedSystemInfo
+
+def verboseFormat(sign):
+    if len(userhost) > len(month + day + time) + 9:
+        dashline = ('-' * (len(userhost)))
+    elif len(uptime) + 8 > len(month + day + time) + 9:
+        dashline = ('-' * (len(uptime) + 8 ))
+    else:
+        dashline = ('-' * (len(month + day + time) + 9))
+    if len(machine) + 9 > len(dashline):
+        dashline = ('-' * (len(machine) + 9))
+    elif len(kernel) + 9 > len(dashline):
+        dashline = ('-' * (len(kernel) + 9))
+
+    systemPortion = (
+        boldenText(userhost, sign.color),
+        dashline,
+        boldenText('Date: ', sign.color) + month + ' ' + day + ', ' + time, 
+        dashline, 
+        boldenText('OS: ', sign.color) + distro, 
+        boldenText('Kernel: ', sign.color) + kernel, 
+        boldenText('Uptime: ', sign.color) + uptime, 
+        boldenText('Shell: ', sign.color) + shell,
+        boldenText('DE: ', sign.color) + desktop,
+        boldenText('Machine: ', sign.color) + machine,
+        dashline)
+
+    verbosePortion = (
+        boldenText('Memory: ', sign.color) + memory, 
+        boldenText('Swap: ', sign.color) + swap, 
+        boldenText('Disk Space: ', sign.color) + sign.endmonth + ' ' + sign.endday, 
+        boldenText('CPU: ', sign.color) + sign.planet.title(), 
+        boldenText('GPU: ', sign.color) + sign.element.title(), 
+        boldenText('Local IP: ', sign.color) + sign.modality.title())
+
+    formattedSystemInfo = (systemPortion + verbosePortion)
+
+    return formattedSystemInfo
+
+
 
 def smallFormat(sign, useUnicode):
     if not useUnicode:
