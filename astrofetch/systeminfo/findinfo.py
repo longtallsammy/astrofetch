@@ -196,12 +196,49 @@ def getMem(memType):
 
     if totalMem == round(availMem):
         usedMem = ''
-        totalMem = str(totalMem) + 'G'
+        totalMem = str(totalMem) + 'Gb'
     else:
         usedMem = totalMem - availMem
-        totalMem = str(totalMem) + 'G ('
+        totalMem = str(totalMem) + 'Gb ('
         usedMem = '%.1f' % usedMem + "G used)"
 
     memory = totalMem + usedMem
 
     return memory
+
+def getBlockSpace(block):
+    partInfo = os.statvfs(block)
+    partSize = round((partInfo.f_frsize * partInfo.f_blocks) / 1073741824)
+    partFree = round((partInfo.f_frsize * partInfo.f_bfree) / 1073741824)
+    partUsed = partSize - partFree
+    # check size of sizes - if 1 gb convert to mb, if 1000 convert to tb
+    partSpace = str(partFree) + 'Gb (' + str(partUsed) + 'G used)'
+    return partSpace
+
+def getCpu():
+    with open ("/proc/cpuinfo") as cpuFile:
+        for line in cpuFile.readlines():
+            if 'model name' in line:
+                cpuInfo = line.split(':')[1]
+                break
+
+    if cpuInfo != '':
+        cpuName = ''
+        cpuInfo = cpuInfo.replace('Processor', '').split()
+        for word in cpuInfo:
+            if 'Core' in word:
+                word = ''
+            cpuName = cpuName + word + ' '
+    else:
+        cpuName = 'Unknown CPU'
+
+    # return cpuName.strip()
+    return cpuName
+
+def getGpu():
+    nvDir = "/proc/driver/nvidia/gpus" #/NUM/information
+    if nvDir.exists():
+        #do everything here
+        gpuDir = nvDir
+    else:
+        gpuDir = amDir

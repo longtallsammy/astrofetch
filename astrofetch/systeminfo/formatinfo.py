@@ -14,6 +14,9 @@ machine = findinfo.getMachineFamily()
 desktop = findinfo.getDesktopEnv()
 memory = findinfo.getMem('mem')
 swap = findinfo.getMem('swap')
+home = findinfo.getBlockSpace('/home')
+boot = findinfo.getBlockSpace('/boot')
+cpu = findinfo.getCpu()
 
 def boldenText(text, color):
     text = color + '\033[1m' + text + '\033[0m'
@@ -72,28 +75,26 @@ def verboseFormat(sign):
         boldenText(userhost, sign.color),
         dashline,
         boldenText('Date: ', sign.color) + month + ' ' + day + ', ' + time, 
+        boldenText('Season: ', sign.color) +  sign.name,
         dashline, 
         boldenText('OS: ', sign.color) + distro, 
         boldenText('Kernel: ', sign.color) + kernel, 
         boldenText('Uptime: ', sign.color) + uptime, 
         boldenText('Shell: ', sign.color) + shell,
         boldenText('DE: ', sign.color) + desktop,
-        boldenText('Machine: ', sign.color) + machine,
-        dashline)
+        boldenText('Machine: ', sign.color) + machine)
 
     verbosePortion = (
         boldenText('Memory: ', sign.color) + memory, 
-        boldenText('Swap: ', sign.color) + swap, 
-        boldenText('Disk Space: ', sign.color) + sign.endmonth + ' ' + sign.endday, 
-        boldenText('CPU: ', sign.color) + sign.planet.title(), 
+        boldenText('CPU: ', sign.color) + cpu, 
         boldenText('GPU: ', sign.color) + sign.element.title(), 
+        boldenText('Home: ', sign.color) + home,
+        boldenText('Boot: ', sign.color) + boot,
         boldenText('Local IP: ', sign.color) + sign.modality.title())
 
     formattedSystemInfo = (systemPortion + verbosePortion)
 
     return formattedSystemInfo
-
-
 
 def smallFormat(sign, useUnicode):
     if not useUnicode:
