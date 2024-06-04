@@ -17,13 +17,13 @@ swap = findinfo.getMem('swap')
 home = findinfo.getBlockSpace('/home')
 boot = findinfo.getBlockSpace('/boot')
 cpu, gpu = findinfo.getCpuGpu()
-localIp = findinfo.getLocalIp()
+addr = findinfo.getLocalIp()
 
 def boldenText(text, color):
     text = color + '\033[1m' + text + '\033[0m'
     return text
 
-def fullFormat(sign): #organize this so its quicker, ur running 2 ifs. match maybe
+def fullFormat(sign):
     if len(userhost) > len(month + day + time) + 9:
         dashline = ('-' * (len(userhost)))
     elif len(uptime) + 8 > len(month + day + time) + 9:
@@ -38,11 +38,11 @@ def fullFormat(sign): #organize this so its quicker, ur running 2 ifs. match may
     systemPortion = (
         boldenText(userhost, sign.color),
         dashline,
-        boldenText('Date: ', sign.color) + month + ' ' + day + ', ' + time, 
-        dashline, 
-        boldenText('OS: ', sign.color) + distro, 
-        boldenText('Kernel: ', sign.color) + kernel, 
-        boldenText('Uptime: ', sign.color) + uptime, 
+        boldenText('Date: ', sign.color) + month + ' ' + day + ', ' + time,
+        dashline,
+        boldenText('OS: ', sign.color) + distro,
+        boldenText('Kernel: ', sign.color) + kernel,
+        boldenText('Uptime: ', sign.color) + uptime,
         boldenText('Shell: ', sign.color) + shell,
         boldenText('DE: ', sign.color) + desktop,
         boldenText('Machine: ', sign.color) + machine,
@@ -75,23 +75,23 @@ def verboseFormat(sign):
     systemPortion = (
         boldenText(userhost, sign.color),
         dashline,
-        boldenText('Date: ', sign.color) + month + ' ' + day + ', ' + time, 
+        boldenText('Date: ', sign.color) + month + ' ' + day + ', ' + time,
         boldenText('Season: ', sign.color) +  sign.name,
         dashline, 
-        boldenText('OS: ', sign.color) + distro, 
-        boldenText('Kernel: ', sign.color) + kernel, 
-        boldenText('Uptime: ', sign.color) + uptime, 
+        boldenText('OS: ', sign.color) + distro,
+        boldenText('Kernel: ', sign.color) + kernel,
+        boldenText('Uptime: ', sign.color) + uptime,
         boldenText('Shell: ', sign.color) + shell,
         boldenText('DE: ', sign.color) + desktop,
         boldenText('Machine: ', sign.color) + machine)
 
     verbosePortion = (
-        boldenText('Memory: ', sign.color) + memory, 
-        boldenText('CPU: ', sign.color) + cpu, 
+        boldenText('Memory: ', sign.color) + memory,
+        boldenText('CPU: ', sign.color) + cpu,
         boldenText('GPU: ', sign.color) + gpu,
         boldenText('Home: ', sign.color) + home,
         boldenText('Boot: ', sign.color) + boot,
-        boldenText('Local Addr: ', sign.color) + localIp,
+        boldenText('Local Addr: ', sign.color) + addr,
     )
 
     formattedSystemInfo = (systemPortion + verbosePortion)
@@ -103,7 +103,7 @@ def smallFormat(sign, useUnicode):
         formattedSystemInfo = (
             time + 
             ' ' + 
-            str(month + ' ' + day) + 
+            str(month + ' ' + day) +
             ', ' + 
             sign.name + 
             ' season.')

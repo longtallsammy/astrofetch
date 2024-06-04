@@ -248,7 +248,6 @@ def getCpuGpu():
 
     #Checking if cpu has graphics
     if 'Graphics' in cpuInfo.title():
-        #gpuName = cpuInfo.split()[0] + ' Onboard Graphics'
         gpuName = 'Integrated Graphics'
 
     unnecessaryInfo = ['with','Processor']
