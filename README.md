@@ -129,12 +129,15 @@
   </p>
 </details>
 <h2>🗒️ Notes</h2>
-<p>Only tested on Arch, Fedora, Pop, and Ubuntu.</p>
+<p>Linux only! Tested on Arch, Fedora, Pop, and Ubuntu.</p>
 <h2>➡️ To-Do List</h2>
 <p> 
 
   - Ensure functionality across most distros
-  - Build pip package once everything is working
+  - Build python package (once everything is working)
   - Add color toggle
-  - Add option for more system specs/less zodiac info (whilst keeping logo)
+  - Add option for more system specs/less zodiac info (with logo)
   - Add functionality for other platforms</p>
+<h2>✳️ Contribute</h2>
+<p>Any & all contributions are welcome!</p>
+<p>Running astrofetch on distributions not listed in the Notes section would be a great place to start. Thank you!</p>
