@@ -16,7 +16,8 @@ memory = findinfo.getMem('mem')
 swap = findinfo.getMem('swap')
 home = findinfo.getBlockSpace('/home')
 boot = findinfo.getBlockSpace('/boot')
-cpu = findinfo.getCpu()
+cpu, gpu = findinfo.getCpuGpu()
+localIp = findinfo.getLocalIp()
 
 def boldenText(text, color):
     text = color + '\033[1m' + text + '\033[0m'
@@ -87,10 +88,11 @@ def verboseFormat(sign):
     verbosePortion = (
         boldenText('Memory: ', sign.color) + memory, 
         boldenText('CPU: ', sign.color) + cpu, 
-        boldenText('GPU: ', sign.color) + sign.element.title(), 
+        boldenText('GPU: ', sign.color) + gpu,
         boldenText('Home: ', sign.color) + home,
         boldenText('Boot: ', sign.color) + boot,
-        boldenText('Local IP: ', sign.color) + sign.modality.title())
+        boldenText('Local Addr: ', sign.color) + localIp,
+    )
 
     formattedSystemInfo = (systemPortion + verbosePortion)
 

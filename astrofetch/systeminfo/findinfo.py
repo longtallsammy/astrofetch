@@ -171,6 +171,7 @@ def getDate():
     month = fulldate.strftime("%B")         # = August
     day = fulldate.strftime("%d")           # = 27
     time = fulldate.strftime("%H:%M")       # = 10:45
+    
     return month, day, time
 
 def getMem(memType):
@@ -196,10 +197,10 @@ def getMem(memType):
 
     if totalMem == round(availMem):
         usedMem = ''
-        totalMem = str(totalMem) + 'Gb'
+        totalMem = str(totalMem) + 'GB'
     else:
         usedMem = totalMem - availMem
-        totalMem = str(totalMem) + 'Gb ('
+        totalMem = str(totalMem) + 'GB ('
         usedMem = '%.1f' % usedMem + "G used)"
 
     memory = totalMem + usedMem
@@ -207,38 +208,111 @@ def getMem(memType):
     return memory
 
 def getBlockSpace(block):
+    TB = 1099511627776
+    GB = 1073741824
+    MB = 1048576
+
     partInfo = os.statvfs(block)
-    partSize = round((partInfo.f_frsize * partInfo.f_blocks) / 1073741824)
-    partFree = round((partInfo.f_frsize * partInfo.f_bfree) / 1073741824)
+
+    partSizeBytes = partInfo.f_frsize * partInfo.f_blocks
+    partFreeBytes = partInfo.f_frsize * partInfo.f_bfree
+
+    if partSizeBytes < GB:
+        partSize = round((partInfo.f_frsize * partInfo.f_blocks) / MB)
+        partFree = round((partInfo.f_frsize * partInfo.f_bfree) / MB)
+        partUnit = 'MB'
+    elif partSizeBytes > TB:
+        partSize = round((partInfo.f_frsize * partInfo.f_blocks) / TB)
+        partFree = round((partInfo.f_frsize * partInfo.f_bfree) / TB)
+        partUnit = 'TB'
+    else:
+        partSize = round((partInfo.f_frsize * partInfo.f_blocks) / GB)
+        partFree = round((partInfo.f_frsize * partInfo.f_bfree) / GB)
+        partUnit = 'GB'
+
     partUsed = partSize - partFree
-    # check size of sizes - if 1 gb convert to mb, if 1000 convert to tb
-    partSpace = str(partFree) + 'Gb (' + str(partUsed) + 'G used)'
+    partSpace = str(partUsed) + partUnit + ' used, ' + str(partFree) + partUnit + ' free'
+
     return partSpace
 
-def getCpu():
+def getCpuGpu():
+    cpuName = ''
+    gpuName = ''
+
+    #CPU
     with open ("/proc/cpuinfo") as cpuFile:
         for line in cpuFile.readlines():
             if 'model name' in line:
                 cpuInfo = line.split(':')[1]
                 break
 
-    if cpuInfo != '':
-        cpuName = ''
-        cpuInfo = cpuInfo.replace('Processor', '').split()
-        for word in cpuInfo:
-            if 'Core' in word:
-                word = ''
-            cpuName = cpuName + word + ' '
-    else:
-        cpuName = 'Unknown CPU'
+    #Checking if cpu has graphics
+    if 'Graphics' in cpuInfo.title():
+        #gpuName = cpuInfo.split()[0] + ' Onboard Graphics'
+        gpuName = 'Integrated Graphics'
 
-    # return cpuName.strip()
-    return cpuName
+    unnecessaryInfo = ['with','Processor']
+    for separator in unnecessaryInfo:
+        if separator in cpuInfo:
+            cpuInfo = cpuInfo.split(separator)[0]
 
-def getGpu():
-    nvDir = "/proc/driver/nvidia/gpus" #/NUM/information
-    if nvDir.exists():
-        #do everything here
-        gpuDir = nvDir
+    cpuInfo = cpuInfo.split()
+    for word in cpuInfo:
+        if 'Core' in word:
+            word = ''
+        cpuName = cpuName + word + ' '
+
+    #GPU
+    try:
+        pciInfo = subprocess.check_output(['lspci']).decode('utf-8').rstrip().split('\n')
+        for pciLine in pciInfo:
+            pciLineContents = pciLine.split()
+
+            gpuMarkers = ['VGA', '3D controller']
+            for marker in gpuMarkers:
+                if marker in pciLineContents:
+                    if 'Integrated' in pciLineContents:
+                        vgaInfo = ''
+                        pass
+                    else:
+                        vgaInfo = pciLine
+                        break
+
+        if vgaInfo != '':
+            gpuName = ''
+            vgaInfo = vgaInfo.split('[')
+            for section in vgaInfo:
+                if ':' in section:
+                    pass
+                else:
+                    if '(' in section:
+                        section = section.split('(')[0]
+                    gpuInfo = section.split('/')[0].replace(']', '')
+                    gpuName = gpuName + gpuInfo + ' '
+        elif vgaInfo == '' and gpuName == 'Integrated Graphics':
+            pass
+        else:
+            gpuName = 'Unknown GPU'
+
+    except:
+        if gpuName != 'Integrated Graphics':
+            gpuName = 'Unknown GPU'
+
+    return cpuName, gpuName
+
+def getLocalIp():
+    with open ("/proc/net/fib_trie") as ipInfoFile:
+        for ipInfoLine in ipInfoFile.read().split('|'):
+            if '32 host LOCAL' in ipInfoLine:
+                if '127.0.0.1' in ipInfoLine:
+                    pass
+                else:
+                    localIp = ipInfoLine
+                    break
+
+    if localIp != '':
+        localIp = localIp.split()[1]
     else:
-        gpuDir = amDir
+        localIp = ' -127.0.0.1- '
+
+    return localIp
