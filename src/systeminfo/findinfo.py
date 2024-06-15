@@ -13,8 +13,12 @@ def getHost():
     return host
 
 def getUptime():
-    with open("/proc/uptime") as uptimeFile:
-        uptime = uptimeFile.read().split(' ')[0]
+    try:
+        with open("/proc/uptime") as uptimeFile:
+            uptime = uptimeFile.read().split(' ')[0]
+    except:
+        uptime = 'Unknown uptime!'
+        return uptime
 
     rawUptime = round(float(uptime))
 
@@ -75,8 +79,12 @@ def getUptime():
     return uptime
 
 def getDistro():
-    with open("/etc/os-release") as distroFile:
-        distroList = distroFile.read().split("\n")
+    try:
+        with open("/etc/os-release") as distroFile:
+            distroList = distroFile.read().split("\n")
+    except:
+        distro = 'Unknown distro!'
+        return distro
 
     NAME1 = distroList[0]
     NAME2 = distroList[1]
@@ -92,21 +100,38 @@ def getDistro():
     return distro
 
 def getKernel():
-    with open("/proc/sys/kernel/osrelease") as kernelFile:
-        kernelVersion = kernelFile.read()
-    
-    kernel = kernelVersion.strip().split('-')[0]
-    kernel = kernel.replace(".x86_64", '').replace(".aarch64", ' ')
+    try:
+        with open("/proc/sys/kernel/osrelease") as kernelFile:
+            kernelInfo = kernelFile.read()
+    except:
+        kernelInfo = 'No kernel info found!'
+        return kernelInfo
+
+    kernelInfo = kernelInfo.strip().split('-')
+    kernelVersion = kernelInfo.pop(0)
+
+    uniqueKernel = ''
+    for info in kernelInfo:
+        match info:
+            case 'lts':
+                uniqueKernel = '-lts'
+            case 'hardened':
+                uniqueKernel = '-hardened'
+
+    #kernel = kernelVersion.replace(".x86_64", '').replace(".aarch64", '') + uniqueKernel
+    kernel = kernelVersion + uniqueKernel
 
     return kernel
 
 def getDesktopEnv():
     desktopEnv = os.environ['DESKTOP_SESSION']
+
     match desktopEnv:
         case 'gnome':
             deVersion = subprocess.check_output(['gnome-shell', '--version']).decode('utf-8').rstrip()
             desktopEnv = deVersion.replace('Shell ', '')
         case 'plasmax11' | 'plasma':
+            #using -v here takes too long, omit version
             desktopEnv = 'KDE Plasma'
         case 'awesome':
             deVersion = subprocess.check_output(['awesome', '-v']).decode('utf-8').rstrip()
@@ -117,18 +142,13 @@ def getDesktopEnv():
             deVersion = deVersion.split(' ')[1]
             desktopEnv = 'Xfce ' + deVersion
         case 'pop':
-            desktopEnv = 'Cosmic'
+            desktopEnv = 'Cosmic DE'
         case _:
-            if desktopEnv == '':
-                desktopEnv = ' - '
-            else:
-                desktopEnv = desktopEnv.lower().title()
+            desktopEnv = desktopEnv.lower().title()
 
     return desktopEnv
 
 def getShell():
-    currentShell = ''
-
     shell = os.environ['SHELL']
     shell = shell.split('/')[-1]
 
@@ -142,27 +162,32 @@ def getShell():
         case 'zsh':
             shell = subprocess.check_output(['zsh', '--version']).decode('utf-8').rstrip()
             shell = shell.split(' ')[:-1]
-            shell = ' '.join(shell)
-            currentShell = currentShell + shell
+            currentShell = ' '.join(shell)
         case 'fish':
             shell = subprocess.check_output(['fish', '--version']).decode('utf-8').rstrip()
-            shell = 'fish ' + shell.split(' ')[-1]
-            currentShell = currentShell + shell
+            currentShell = 'fish ' + shell.split(' ')[-1]
+        case _:
+            currentShell = shell
 
     return currentShell
 
 def getMachineFamily():
-    with open("/sys/devices/virtual/dmi/id/product_family") as hardwareIdFile:
-        hardwareId = hardwareIdFile.read().strip()
-    if hardwareId == 'To be filled by O.E.M.':
-        with open("/sys/devices/virtual/dmi/id/board_name") as boardIdFile:
-            hardwareId = boardIdFile.read().strip()
+    try:
+        with open("/sys/devices/virtual/dmi/id/product_family") as hardwareIdFile:
+            hardwareId = hardwareIdFile.read().strip()
+
+        if hardwareId == 'To be filled by O.E.M.':
+            with open("/sys/devices/virtual/dmi/id/board_name") as boardIdFile:
+                hardwareId = boardIdFile.read().strip()
             if hardwareId[-1] == ')':
                 hardwareId = hardwareId.split('(')[0]
-            hardwareId = hardwareId.lower().title()
-    elif hardwareId == '':
-        with open("/sys/devices/virtual/dmi/id/sys_vendor") as vendorIdFile:
-            hardwareId = vendorIdFile.read().strip()
+                hardwareId = hardwareId.lower().title()
+            elif hardwareId == '':
+                with open("/sys/devices/virtual/dmi/id/sys_vendor") as vendorIdFile:
+                    hardwareId = vendorIdFile.read().strip()
+        hardwareId = hardwareId.strip()
+    except:
+        hardwareId = 'Unknown hardware!'
 
     return hardwareId
 
@@ -171,12 +196,16 @@ def getDate():
     month = fulldate.strftime("%B")         # = August
     day = fulldate.strftime("%d")           # = 27
     time = fulldate.strftime("%H:%M")       # = 10:45
-    
+
     return month, day, time
 
 def getMem(memType):
-    with open("/proc/meminfo") as memoryInfoFile:
-        memInfo = memoryInfoFile.read().split()
+    try:
+        with open("/proc/meminfo") as memoryInfoFile:
+            memInfo = memoryInfoFile.read().split()
+    except:
+        memory = 'No memory info found!'
+        return memory
 
     if memType == 'mem':
         totalMem = memInfo[1]
@@ -240,11 +269,14 @@ def getCpuGpu():
     gpuName = ''
 
     #CPU
-    with open ("/proc/cpuinfo") as cpuFile:
-        for line in cpuFile.readlines():
-            if 'model name' in line:
-                cpuInfo = line.split(':')[1]
-                break
+    try:
+        with open ("/proc/cpuinfo") as cpuFile:
+            for line in cpuFile.readlines():
+                if 'model name' in line:
+                    cpuInfo = line.split(':')[1]
+                    break
+    except:
+        cpuInfo = 'No CPU info found!'
 
     #Checking if cpu has graphics
     if 'Graphics' in cpuInfo.title():
@@ -295,24 +327,28 @@ def getCpuGpu():
 
     except:
         if gpuName != 'Integrated Graphics':
-            gpuName = 'Unknown GPU'
+            gpuName = 'Unknown GPU!'
 
     return cpuName, gpuName
 
 def getLocalIp():
-    localIp = ''
-    with open ("/proc/net/fib_trie") as ipInfoFile:
-        for ipInfoLine in ipInfoFile.read().split('|'):
-            if '32 host LOCAL' in ipInfoLine:
-                if '127.0.0.1' in ipInfoLine:
-                    pass
-                else:
-                    localIp = ipInfoLine
-                    break
+    try:
+        with open ("/proc/net/fib_trie") as ipInfoFile:
+            ipInfo = ipInfoFile.read().split('|')
+    except:
+        localIp = 'No IP info found!'
+        return localIp
 
-    if localIp != '':
+    localIp = 'No connection'
+    for ipInfoLine in ipInfo:
+        if '32 host LOCAL' in ipInfoLine:
+            if '127.0.0.1' in ipInfoLine:
+                pass
+            else:
+                localIp = ipInfoLine
+                break
+
+    if localIp != 'No connection':
         localIp = localIp.split()[1]
-    else:
-        localIp = 'No connection'
 
     return localIp

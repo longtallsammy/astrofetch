@@ -24,16 +24,15 @@ def boldenText(text, color):
     return text
 
 def fullFormat(sign):
-    if len(userhost) > len(month + day + time) + 9:
-        dashline = ('-' * (len(userhost)))
-    elif len(uptime) + 8 > len(month + day + time) + 9:
-        dashline = ('-' * (len(uptime) + 8 ))
-    else:
-        dashline = ('-' * (len(month + day + time) + 9))
-    if len(machine) + 9 > len(dashline):
-        dashline = ('-' * (len(machine) + 9))
-    elif len(kernel) + 9 > len(dashline):
-        dashline = ('-' * (len(kernel) + 9))
+    #length of cmd output + characters in prefix + 2
+    uptimeLength = len(uptime) + 8
+    machineLength = len(machine) + 9
+    kernelLength = len(kernel) + 8
+    dateLength = len(month + day + time) + 6
+    userhostLength = len(user + host) #no prefix
+
+    dashlineLength = max([uptimeLength, machineLength, kernelLength, dateLength, userhostLength]) + 1
+    dashline = ('-' * dashlineLength) #separator
 
     systemPortion = (
         boldenText(userhost, sign.color),
@@ -49,11 +48,11 @@ def fullFormat(sign):
         dashline)
 
     astrologyPortion = (
-        boldenText('Season: ', sign.color) + sign.name, 
-        boldenText('Starts: ', sign.color) + sign.startmonth + ' ' + sign.startday, 
-        boldenText('Ends: ', sign.color) + sign.endmonth + ' ' + sign.endday, 
-        boldenText('Planet: ', sign.color) + sign.planet.title(), 
-        boldenText('Element: ', sign.color) + sign.element.title(), 
+        boldenText('Season: ', sign.color) + sign.name,
+        boldenText('Starts: ', sign.color) + sign.startmonth + ' ' + sign.startday,
+        boldenText('Ends: ', sign.color) + sign.endmonth + ' ' + sign.endday,
+        boldenText('Planet: ', sign.color) + sign.planet.title(),
+        boldenText('Element: ', sign.color) + sign.element.title(),
         boldenText('Modality: ', sign.color) + sign.modality.title())
 
     formattedSystemInfo = (systemPortion + astrologyPortion)
@@ -61,16 +60,18 @@ def fullFormat(sign):
     return formattedSystemInfo
 
 def verboseFormat(sign):
-    if len(userhost) > len(month + day + time) + 9:
-        dashline = ('-' * (len(userhost)))
-    elif len(uptime) + 8 > len(month + day + time) + 9:
-        dashline = ('-' * (len(uptime) + 8 ))
-    else:
-        dashline = ('-' * (len(month + day + time) + 9))
-    if len(machine) + 9 > len(dashline):
-        dashline = ('-' * (len(machine) + 9))
-    elif len(kernel) + 9 > len(dashline):
-        dashline = ('-' * (len(kernel) + 9))
+    #length of cmd output + characters in prefix + 2
+    uptimeLength = len(uptime) + 8
+    machineLength = len(machine) + 9
+    homeLength = len(home) + 6
+    bootLength = len(boot) + 6
+    memoryLength = len(memory) + 8
+    gpuLength = len(gpu) + 5
+    cpuLength = len(cpu) + 5
+    userhostLength = len(user + host) #no prefix
+
+    dashlineLength = max([userhostLength, uptimeLength, machineLength, homeLength, bootLength, memoryLength]) + 1
+    dashline = ('-' * dashlineLength) #separator
 
     systemPortion = (
         boldenText(userhost, sign.color),
@@ -101,11 +102,11 @@ def verboseFormat(sign):
 def smallFormat(sign, useUnicode):
     if not useUnicode:
         formattedSystemInfo = (
-            time + 
-            ' ' + 
+            time +
+            ' ' +
             str(month + ' ' + day) +
-            ', ' + 
-            sign.name + 
+            ', ' +
+            sign.name +
             ' season.')
     else:
         formattedSystemInfo = (
@@ -118,7 +119,7 @@ def smallFormat(sign, useUnicode):
 def miniFormat(sign, useUnicode):
     if not useUnicode:
         formattedSystemInfo = sign.name
-    else: 
+    else:
         formattedSystemInfo = sign.emoji
 
     return formattedSystemInfo
