@@ -300,6 +300,7 @@ def getCpuGpu():
     return cpuName, gpuName
 
 def getLocalIp():
+    localIp = ''
     with open ("/proc/net/fib_trie") as ipInfoFile:
         for ipInfoLine in ipInfoFile.read().split('|'):
             if '32 host LOCAL' in ipInfoLine:
@@ -312,6 +313,6 @@ def getLocalIp():
     if localIp != '':
         localIp = localIp.split()[1]
     else:
-        localIp = ' -127.0.0.1- '
+        localIp = 'No connection'
 
     return localIp
