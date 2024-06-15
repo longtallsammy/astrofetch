@@ -7,7 +7,7 @@
 <p><b>1: Clone repo</b>
   
     git clone https://github.com/longtallsammy/astrofetch.git
-<p><i>(Alternatively, download the latest tagged release.)</i></p>
+<p><i>(Alternatively, download the latest release.)</i></p>
 <b>2: Run init.py</b>
 
     python3 /path/to/astrofetch/src/__init__.py
@@ -41,21 +41,6 @@
   >   14:36 May 18, Taurus season.
     
 </p>
-<details>
-<summary>Unicode</summary>
-  <p>
-  <b>
-
-    astrofetch -s -u
-    
-  </b>
-  <b>Output:</b>
-
-  >  14:36  ♉
-    
-  </p>
-</details>
-
 <p>Show season name:
 <b>
     
@@ -67,20 +52,6 @@
   >   Taurus
        
 </p>
-<details>
-<summary>Unicode</summary>
-  <p>
-  <b>
-
-    astrofetch -m -u
-    
-  </b>
-  <b>Output:</b>
-
-  >   ♉
-    
-  </p>
-</details>
 <p>Query what season a date lies in:
 <b>
     
@@ -92,20 +63,6 @@
    >  Capricorn season runs from December 22 to January 19.
     
 </p>
-<details>
-<summary>Unicode</summary>
-  <p>
-  <b>
-
-    astrofetch -i jan 1 -u
-    
-  </b>
-  <b>Output:</b>
-
-   >  ♑
-    
-  </p>
-</details>
 <p>Search for information about a sign:
  <b>
 
@@ -123,19 +80,6 @@
    >  Modality: Cardinal
     
 </p>
-<details>
- <summary>Unicode</summary>  
-  <p>
-  <b>
-
-    astrofetch -i capricorn -u
-    
-  </b>
-  <b>Output:</b>
-  
-   >  ♑ Dec 22 -> Jan 19
-  </p>
-</details>
 <h2>🗒️ Notes</h2>
 <p>Linux only! Tested on Arch, Fedora, Pop, and Ubuntu.</p>
 <h2>➡️ To-Do List</h2>
@@ -148,4 +92,3 @@
   - Add functionality for other platforms</p>
 <h2>✳️ Contribute</h2>
 <p>Any & all contributions are welcome!</p>
-<p>Running astrofetch on distributions not listed in the Notes section would be a great place to start. Thank you!</p>
