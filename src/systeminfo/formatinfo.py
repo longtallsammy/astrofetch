@@ -2,102 +2,102 @@ import datetime
 from systeminfo import findinfo
 from signs import starsigns
 
-user = findinfo.getUser()
-host = findinfo.getHost()
-userhost = (user + '@' + host)
-uptime = findinfo.getUptime()
+configFile = 'astrofetch.toml'
+configErrMsg = ("astrofetch: error in config file '" + configFile + "'")
+configInvalidMsg = (configFile + ": invalid entry '")
+
 month, day, time = findinfo.getDate()
-distro = findinfo.getDistro()
-kernel = findinfo.getKernel()
-shell = findinfo.getShell()
-machine = findinfo.getMachineFamily()
-desktop = findinfo.getDesktopEnv()
-memory = findinfo.getMem('mem')
-swap = findinfo.getMem('swap')
-home = findinfo.getBlockSpace('/home')
-boot = findinfo.getBlockSpace('/boot')
-cpu, gpu = findinfo.getCpuGpu()
-addr = findinfo.getLocalIp()
+date = (month + ' ' + day + ', ' + time + ' ')
 
 def boldenText(text, color):
     text = color + '\033[1m' + text + '\033[0m'
     return text
 
-def fullFormat(sign):
-    #length of cmd output + characters in prefix + 2
-    uptimeLength = len(uptime) + 8
-    machineLength = len(machine) + 9
-    kernelLength = len(kernel) + 8
-    dateLength = len(month + day + time) + 6
-    userhostLength = len(user + host) #no prefix
+def largeFormat(sign):
+    #Get settings, process globals
+    ruleset, globalSettings = findinfo.getSettings()
+    textColorSetting = globalSettings[0]
+    logoColorSetting = globalSettings[1]
 
-    dashlineLength = max([uptimeLength, machineLength, kernelLength, dateLength, userhostLength]) + 1
-    dashline = ('-' * dashlineLength) #separator
+    textColor = sign.color
 
-    systemPortion = (
-        boldenText(userhost, sign.color),
-        dashline,
-        boldenText('Date: ', sign.color) + month + ' ' + day + ', ' + time,
-        dashline,
-        boldenText('OS: ', sign.color) + distro,
-        boldenText('Kernel: ', sign.color) + kernel,
-        boldenText('Uptime: ', sign.color) + uptime,
-        boldenText('Shell: ', sign.color) + shell,
-        boldenText('DE: ', sign.color) + desktop,
-        boldenText('Machine: ', sign.color) + machine,
-        dashline)
+    for colorSetting in [textColorSetting, logoColorSetting]:
+        if colorSetting != 'default':
+            if colorSetting in starsigns.colors:
+                color = starsigns.colors.get(colorSetting)
+            else:
+                print(configErrMsg)
+                exit(configInvalidMsg + colorSetting + "'")
 
-    astrologyPortion = (
-        boldenText('Season: ', sign.color) + sign.name,
-        boldenText('Starts: ', sign.color) + sign.startmonth + ' ' + sign.startday,
-        boldenText('Ends: ', sign.color) + sign.endmonth + ' ' + sign.endday,
-        boldenText('Planet: ', sign.color) + sign.planet.title(),
-        boldenText('Element: ', sign.color) + sign.element.title(),
-        boldenText('Modality: ', sign.color) + sign.modality.title())
+            if colorSetting == logoColorSetting:
+                sign.color = color
+            elif colorSetting == textColorSetting:
+                textColor = color
 
-    formattedSystemInfo = (systemPortion + astrologyPortion)
+    #Assign field prefixes
+    systemInfo = {
+        'User: ': findinfo.getUser(),
+        'Hostname: ': findinfo.getHost(),
+        'Uptime: ': findinfo.getUptime(),
+        'Date: ': date,
+        'OS: ': findinfo.getDistro(),
+        'Kernel: ': findinfo.getKernel(),
+        'Shell: ': findinfo.getShell(),
+        'Machine: ': findinfo.getMachineFamily(),
+        'DE: ': findinfo.getDesktopEnv(),
+        'Memory: ': findinfo.getMem('mem'),
+        'Swap: ': findinfo.getMem('swap'),
+        'Home: ': findinfo.getBlockSpace('/home'),
+        'Boot: ': findinfo.getBlockSpace('/boot'),
+        'CPU: ': findinfo.getCpuGpu()[0],
+        'GPU: ': findinfo.getCpuGpu()[1],
+        'IP: ': findinfo.getLocalIp(),
+        'Season: ': sign.name,
+        'Starts: ': sign.startmonth + ' ' + sign.startday,
+        'Ends: ': sign.endmonth + ' ' + sign.endday,
+        'Planet: ': sign.planet.title(),
+        'Element: ': sign.element.title(),
+        'Modality: ': sign.modality.title()
+    }
 
-    return formattedSystemInfo
+    #Process user settings (fields), format it
+    largeFormatInfo = []
+    dashlineLength = 0
 
-def verboseFormat(sign):
-    #length of cmd output + characters in prefix + 2
-    uptimeLength = len(uptime) + 8
-    machineLength = len(machine) + 9
-    homeLength = len(home) + 6
-    bootLength = len(boot) + 6
-    memoryLength = len(memory) + 8
-    gpuLength = len(gpu) + 5
-    cpuLength = len(cpu) + 5
-    userhostLength = len(user + host) #no prefix
+    for item in ruleset:
+        if item in ['cpu', 'gpu', 'ip', 'de', 'os']:
+            item = item.upper() + ': '
+        else:
+            item = item.replace('season-', '').title() + ': '
 
-    dashlineLength = max([userhostLength, uptimeLength, machineLength, homeLength, bootLength, memoryLength]) + 1
-    dashline = ('-' * dashlineLength) #separator
+        if item in systemInfo.keys():
+            #separator length
+            itemLength = len(item + systemInfo.get(item))
+            if itemLength >= dashlineLength:
+                dashlineLength = itemLength + 1
+            #color
+            entry = boldenText(item, textColor) + systemInfo.get(item)
+            largeFormatInfo.append(entry)
+        else:
+            match item:
+                #exceptions & errors
+                case 'Separator: ':
+                    largeFormatInfo.append(item)
+                case 'Userhost: ':
+                    userhost = (systemInfo.get('User: ') + '@' + systemInfo.get('Hostname: '))
+                    largeFormatInfo.append(boldenText(userhost, textColor))
+                case _:
+                    print(configErrMsg)
+                    exit(configInvalidMsg + item.lower()[:-2] + "'")
 
-    systemPortion = (
-        boldenText(userhost, sign.color),
-        dashline,
-        boldenText('Date: ', sign.color) + month + ' ' + day + ', ' + time,
-        boldenText('Season: ', sign.color) +  sign.name,
-        dashline, 
-        boldenText('OS: ', sign.color) + distro,
-        boldenText('Kernel: ', sign.color) + kernel,
-        boldenText('Uptime: ', sign.color) + uptime,
-        boldenText('Shell: ', sign.color) + shell,
-        boldenText('DE: ', sign.color) + desktop,
-        boldenText('Machine: ', sign.color) + machine)
+    #separators
+    i = 0
+    for item in largeFormatInfo:
+        if item == 'Separator: ':
+            largeFormatInfo[i] = '-' * dashlineLength
+        i = i + 1
 
-    verbosePortion = (
-        boldenText('Memory: ', sign.color) + memory,
-        boldenText('CPU: ', sign.color) + cpu,
-        boldenText('GPU: ', sign.color) + gpu,
-        boldenText('Home: ', sign.color) + home,
-        boldenText('Boot: ', sign.color) + boot,
-        boldenText('Local Addr: ', sign.color) + addr,
-    )
-
-    formattedSystemInfo = (systemPortion + verbosePortion)
-
-    return formattedSystemInfo
+    return largeFormatInfo
 
 def smallFormat(sign, useUnicode):
     if not useUnicode:

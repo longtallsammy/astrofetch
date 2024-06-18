@@ -1,6 +1,7 @@
 import os
 import subprocess
 import datetime
+import tomllib
 
 def getUser():
     user = os.environ['USER']
@@ -118,7 +119,6 @@ def getKernel():
             case 'hardened':
                 uniqueKernel = '-hardened'
 
-    #kernel = kernelVersion.replace(".x86_64", '').replace(".aarch64", '') + uniqueKernel
     kernel = kernelVersion + uniqueKernel
 
     return kernel
@@ -278,15 +278,15 @@ def getCpuGpu():
     except:
         cpuInfo = 'No CPU info found!'
 
-    #Checking if cpu has graphics
+    #Check cpu graphics
     if 'Graphics' in cpuInfo.title():
         gpuName = 'Integrated Graphics'
 
+    #Remove extra words
     unnecessaryInfo = ['with','Processor']
-    for separator in unnecessaryInfo:
-        if separator in cpuInfo:
-            cpuInfo = cpuInfo.split(separator)[0]
-
+    for word in unnecessaryInfo:
+        if word in cpuInfo:
+            cpuInfo = cpuInfo.split(word)[0]
     cpuInfo = cpuInfo.split()
     for word in cpuInfo:
         if 'Core' in word:
@@ -352,3 +352,31 @@ def getLocalIp():
         localIp = localIp.split()[1]
 
     return localIp
+
+def getSettings():
+    configFile = 'astrofetch.toml'
+    try:
+        with open("../" + configFile, "rb") as settingsFile:
+            settings = tomllib.load(settingsFile)
+    except:
+        print('astrofetch: cannot read config file ' + configFile)
+        exit(configFile + ': incorrect format')
+
+    globals = settings['Global']
+    ruleset = settings['Entries']
+
+    textColor = globals['textcolor']
+    signColor = globals['logocolor']
+
+    defaultRuleset = ruleset['default']
+    customRuleset = ruleset['custom']
+
+    #Assign ruleset
+    if customRuleset:
+        ruleset = customRuleset
+    else:
+        ruleset = defaultRuleset
+
+    globalSettings = (textColor, signColor)
+
+    return ruleset, globalSettings

@@ -1,34 +1,29 @@
 from signs import signlogos
 
-def fullFetch(leftSideInfo, rightSideInfo):
+def fullsize(leftSideInfo, rightSideInfo):
     logoDict = signlogos.signs
-    for prettyname, logo in logoDict.items():
-        if prettyname == leftSideInfo.name:
-            seasonlogo = logo
-
-    rightSide = list(rightSideInfo)
-    print('')
-
+    seasonLogo = logoDict.get(leftSideInfo.name)
     color = leftSideInfo.color
 
-    rightSideInfo = list(rightSideInfo)
-
-    while rightSideInfo:
-        for line in seasonlogo:
-            for line in rightSideInfo:
-                print(color + seasonlogo[0] + '\033[0m' + rightSideInfo[0])
-                rightSideInfo.pop(0)
-                seasonlogo.pop(0)
-
-    if seasonlogo:
-        for line in seasonlogo:
-            if line != '                                    ':
-                print(color + line)
+    #Spacer above output
     print('')
 
-def smallFetch(rightSideInfo):
-    print(rightSideInfo)
+    #Put logo/info together line-by-line
+    while rightSideInfo:
+        for line in seasonLogo:
+            for line in rightSideInfo:
+                print(color + seasonLogo[0] + '\033[0m' + rightSideInfo[0])
+                rightSideInfo.pop(0)
+                seasonLogo.pop(0)
 
-def miniFetch(rightSideInfo):
-    print(rightSideInfo)
+    #Print any extra lines in logo
+    if seasonLogo:
+        for line in seasonLogo:
+            if line != '                                    ':
+                print(color + line)
 
+    #Spacer below output
+    print('')
+
+def singleLine(rightSideInfo):
+    print(rightSideInfo)

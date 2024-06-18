@@ -2,25 +2,25 @@ from signs import starsigns
 
 starsignList = starsigns.signs
 
-errShowUsage = 'usage: astrofetch [-h] [-s] [-m] [-u] [-i  [...]]\n'
-invalidInfoArg = 'astrofetch: error: argument -i/--info: invalid query'
-exitBadSearch = (errShowUsage + invalidInfoArg)
-   
-def processInput(infoSupplied, useUnicode, printOutput):
-    #Error handling
-    if len(infoSupplied) > 2:
-        exit(exitBadSearch)
+invalidInfoArg = 'astrofetch: invalid query'
 
-    #1 arg = user likely searched starsign
-    if len(infoSupplied) == 1: 
-        infoSupplied = str(infoSupplied)
-        formattedInfo = infoSupplied.lower().title()
+def processInput(infoSupplied, useUnicode, printOutput, returnDate):
+    #Never more than 2 args
+    if len(infoSupplied) > 2:
+        exit(invalidInfoArg)
+
+    #If -d used, MUST supply 2 args
+    elif len(infoSupplied) == 1:
+        if returnDate != True:
+            infoSupplied = str(infoSupplied)
+            formattedInfo = infoSupplied.lower().title()
+        else:
+            exit(invalidInfoArg)
 
         convertStarsignToDate(formattedInfo, useUnicode)
 
-    #2 args = user likely searched date
-    elif len(infoSupplied) == 2: 
-
+    #Assume date is being queried and format it
+    elif len(infoSupplied) == 2:
         for info in infoSupplied:
             if info.isnumeric():
                 formattedDay = info
@@ -28,22 +28,26 @@ def processInput(infoSupplied, useUnicode, printOutput):
                 info = info[:3]
                 formattedMonth = info.lower().title()
 
+        #Bail if user didn't supply a valid date
         try:
-            convertDateToStarsign(formattedMonth, formattedDay, printOutput, useUnicode)
+            if returnDate:
+                return formattedMonth, formattedDay
+            else:
+                convertDateToStarsign(formattedMonth, formattedDay, printOutput, useUnicode)
         except:
-            exit(exitBadSearch)
-    
+                exit(invalidInfoArg)
+
 def convertDateToStarsign(month, day, printOutput, useUnicode):
     monthSupplied = month[:3]
     daySupplied = day
     day30 = ['Feb', 'Apr', 'Jun', 'Sep', 'Nov']
     searchSuccess = False
-    
+
     if int(daySupplied) > 31:
-        exit(exitBadSearch)
+        exit(invalidInfoArg)
     elif int(daySupplied) > 30 and monthSupplied in day30 or int(daySupplied) > 29 and monthSupplied == day30[0]:
-        exit(exitBadSearch)
-    
+        exit(invalidInfoArg)
+
     for sign in starsignList:
         if monthSupplied == sign.startmonth[:3]:
             if daySupplied > sign.startday or daySupplied == sign.startday:
@@ -57,9 +61,9 @@ def convertDateToStarsign(month, day, printOutput, useUnicode):
                 searchSuccess = True
                 foundSign = sign
                 break
-    
+
     if not searchSuccess:
-        exit(exitBadSearch)
+        exit(invalidInfoArg)
 
     if printOutput:
         if not useUnicode:
@@ -72,29 +76,29 @@ def convertDateToStarsign(month, day, printOutput, useUnicode):
 def convertStarsignToDate(infoSupplied, useUnicode):
     infoSupplied = str(infoSupplied[:-2][2:]).lower().title()
     searchSuccess = False
-    
+
     for sign in starsignList:
         if infoSupplied == sign.name:
             searchSuccess = True
             resultForUnicode = [
-                sign.emoji, 
-                ' ', 
-                sign.startmonth[:3], 
-                ' ', 
-                sign.startday, 
-                ' -> ', 
-                sign.endmonth[:3], 
-                ' ', 
+                sign.emoji,
+                ' ',
+                sign.startmonth[:3],
+                ' ',
+                sign.startday,
+                ' -> ',
+                sign.endmonth[:3],
+                ' ',
                 sign.endday]
             resultForText = [
                 str(sign),
-                'Planet: ' + sign.planet.title(), 
+                'Planet: ' + sign.planet.title(),
                 'Element: ' + sign.element.title(),
                 'Modality: ' + sign.modality.title()]
             break
-    
+
     if not searchSuccess:
-        exit(exitBadSearch)
+        exit(invalidInfoArg)
 
     if not useUnicode:
         print('\n'.join(resultForText))

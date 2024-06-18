@@ -1,3 +1,5 @@
+colors = {'Yellow':'\033[93m', 'Green':'\033[32m', 'Red':'\033[31m', 'Brown':'\033[33m', 'Orange':'\033[91m', 'Pink':'\033[95m', 'Light-Green':'\033[92m', 'Purple':'\033[35m', 'Light-Blue':'\033[94m', 'Black':'\033[30m', 'Blue':'\033[34m', 'White':'\033[37m', 'Cyan':'\033[36m', 'Light-Cyan':'\033[96m'}
+
 class Starsign:
     def __init__(sign, name, emoji, startdate, enddate, planet, pmoji, element, modality, color):
         sign.name = name
@@ -35,7 +37,7 @@ aries = Starsign(
     '\U0001F33A', 
     'fire', 
     'cardinal', 
-    '\033[31m')
+    colors.get('Red'))
 
 taurus = Starsign(
     'Taurus', 
@@ -46,7 +48,7 @@ taurus = Starsign(
     '\U0001F338',
     'earth',
     'fixed',
-    '\033[32m')
+    colors.get('Green'))
 
 gemini = Starsign(
     'Gemini', 
@@ -57,7 +59,7 @@ gemini = Starsign(
     '\U0001F680',
     'air',
     'mutable',
-    '\033[93m')
+    colors.get('Yellow'))
 
 cancer = Starsign(
     'Cancer',
@@ -68,7 +70,7 @@ cancer = Starsign(
     '\U0001F31A',
     'water',
     'cardinal',
-    '\033[32m')
+    colors.get('Green'))
 
 leo = Starsign(
     'Leo', 
@@ -79,7 +81,7 @@ leo = Starsign(
     '\U0001F31E',
     'fire',
     'fixed',
-    '\033[33m')
+    colors.get('Brown'))
 
 virgo = Starsign(
     'Virgo', 
@@ -90,7 +92,7 @@ virgo = Starsign(
     '\U0001F680',
     'earth',
     'mutable',
-    '\033[91m')
+    colors.get('Orange'))
 
 libra = Starsign(
     'Libra', 
@@ -101,7 +103,7 @@ libra = Starsign(
     '\U0001F338',
     'air',
     'cardinal',
-    '\033[95m')
+    colors.get('Pink'))
 
 scorpio = Starsign(
     'Scorpio', 
@@ -112,7 +114,7 @@ scorpio = Starsign(
     '\U0001F311',
     'water',
     'fixed',
-    '\033[92m')
+    colors.get('Light-Green'))
 
 sagittarius = Starsign(
     'Sagittarius', 
@@ -123,7 +125,7 @@ sagittarius = Starsign(
     '\U0001F4A5',
     'fire',
     'mutable',
-    '\033[95m')
+    colors.get('Pink'))
 
 capricorn = Starsign(
     'Capricorn', 
@@ -134,7 +136,7 @@ capricorn = Starsign(
     '\U0001FA90',
     'earth',
     'cardinal',
-    '\033[35m')
+    colors.get('Purple'))
 
 aquarius = Starsign(
     'Aquarius',
@@ -145,7 +147,7 @@ aquarius = Starsign(
     '\U0001F6F8',
     'air',
     'fixed',
-    '\033[94m')
+    colors.get('Light-Blue'))
 
 pisces = Starsign(
     'Pisces', 
@@ -156,6 +158,6 @@ pisces = Starsign(
     '\U0001F531',
     'water',
     'mutable',
-    '\033[92m')
+    colors.get('Light-Green'))
 
 signs = [aries, taurus, gemini, cancer, leo, virgo, libra, scorpio, sagittarius, capricorn, aquarius, pisces]
