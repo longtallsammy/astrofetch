@@ -63,6 +63,7 @@
 </p>
 <h2>✏️ Notes</h2>
 <p>Linux only! Tested on Arch, Fedora, and Ubuntu.</p>
+<p>Terminal must support truecolor/24-bit colors.</p>
 <h2>➡️ To-Do List</h2>
 <p> 
 
