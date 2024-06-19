@@ -354,12 +354,22 @@ def getLocalIp():
     return localIp
 
 def getSettings():
+    #Check config file exists
     configFile = 'astrofetch.toml'
+    srcDir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+    parentDir = os.path.abspath(os.path.join(srcDir, os.pardir))
+    configFile = os.path.abspath(os.path.join(parentDir, configFile))
+    cantReadErr = 'astrofetch: cannot read config file'
+
+    if not os.path.exists(configFile):
+        print(cantReadErr)
+        exit(configFile + ': file not found')
+
     try:
-        with open("../" + configFile, "rb") as settingsFile:
+        with open(configFile, "rb") as settingsFile:
             settings = tomllib.load(settingsFile)
     except:
-        print('astrofetch: cannot read config file ' + configFile)
+        print(cantReadErr)
         exit(configFile + ': incorrect format')
 
     globals = settings['Global']

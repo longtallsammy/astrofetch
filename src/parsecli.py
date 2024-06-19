@@ -1,19 +1,13 @@
 import argparse
-import os.path
-
-configFile = 'astrofetch.toml'
 
 errorMsg = 'see astrofetch -h for usage'
 argComboErr = 'astrofetch: invalid combination of arguments'
 unicodeErr = 'astrofetch: invalid use cannot show date as unicode'
-noSettingsErr = 'astrofetch: missing config file ' + configFile
-
-configFileExists = os.path.exists('../' + configFile)
 
 parser = argparse.ArgumentParser(
     prog='astrofetch',
     description='Fetch program to display the current zodiac season and system information.',
-    epilog=f"Config: file 'astrofetch.toml' must be present when using formats which display a logo", formatter_class=argparse.RawDescriptionHelpFormatter)
+    epilog=f"Config: file 'astrofetch.toml' must be present when using formats which display logo", formatter_class=argparse.RawDescriptionHelpFormatter)
 
 parser.add_argument(
     '-s', '--small',
@@ -53,8 +47,4 @@ if args.mini:
 if args.info:
     if args.date:
         print(argComboErr)
-        exit(errorMsg)
-else:
-    if not configFileExists:
-        print(noSettingsErr)
         exit(errorMsg)
