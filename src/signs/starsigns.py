@@ -1,4 +1,18 @@
-colors = {'Yellow':'\033[93m', 'Green':'\033[32m', 'Red':'\033[31m', 'Brown':'\033[33m', 'Orange':'\033[91m', 'Pink':'\033[95m', 'Light-Green':'\033[92m', 'Purple':'\033[35m', 'Light-Blue':'\033[94m', 'Black':'\033[30m', 'Blue':'\033[34m', 'White':'\033[37m', 'Cyan':'\033[36m', 'Light-Cyan':'\033[96m'}
+colors = {'Black':'\033[38;2;51;51;49m',
+          'Grey':'\033[38;2;206;208;183m',
+          'Red':'\033[38;2;209;74;74m',
+          'Orange':'\033[38;2;239;158;66m',
+          'Mint':'\033[38;2;141;206;139m',
+          'Green':'\033[38;2;89;165;66m',
+          'Brown':'\033[38;2;178;128;104m',
+          'Yellow':'\033[38;2;238;229;111m',
+          'Blue':'\033[38;2;83;146;202m',
+          'Purple':'\033[38;2;196;150;222m',
+          'Pink':'\033[38;2;238;131;220m',
+          'Beige':'\033[38;2;238;189;146m',
+          'Salmon':'\033[38;2;245;107;107m',
+          'Dark-Blue':'\033[38;2;42;78;131m',
+          'White':'\033[38;2;205;213;226m'}
 
 class Starsign:
     def __init__(sign, name, emoji, startdate, enddate, planet, pmoji, element, modality, color):
@@ -29,33 +43,33 @@ class Starsign:
                                 return emoji
 
 aries = Starsign(
-    'Aries', 
-    '\u2648', 
-    ['March', '20'], 
-    ['April', '18'], 
-    'Mars', 
-    '\U0001F33A', 
-    'fire', 
-    'cardinal', 
+    'Aries',
+    '\u2648',
+    ['March', '20'],
+    ['April', '18'],
+    'Mars',
+    '\U0001F33A',
+    'fire',
+    'cardinal',
     colors.get('Red'))
 
 taurus = Starsign(
-    'Taurus', 
-    '\u2649', 
-    ['April', '19'], 
-    ['May', '20'], 
-    'Venus', 
+    'Taurus',
+    '\u2649',
+    ['April', '19'],
+    ['May', '20'],
+    'Venus',
     '\U0001F338',
     'earth',
     'fixed',
     colors.get('Green'))
 
 gemini = Starsign(
-    'Gemini', 
-    '\u264a', 
-    ['May', '21'], 
-    ['June', '20'], 
-    'Mercury', 
+    'Gemini',
+    '\u264a',
+    ['May', '21'],
+    ['June', '20'],
+    'Mercury',
     '\U0001F680',
     'air',
     'mutable',
@@ -63,69 +77,69 @@ gemini = Starsign(
 
 cancer = Starsign(
     'Cancer',
-    '\u264b', 
-    ['June', '21'], 
-    ['July', '22'], 
-    'the Moon', 
+    '\u264b',
+    ['June', '21'],
+    ['July', '22'],
+    'the Moon',
     '\U0001F31A',
     'water',
     'cardinal',
-    colors.get('Green'))
+    colors.get('Grey'))
 
 leo = Starsign(
-    'Leo', 
-    '\u264c', 
+    'Leo',
+    '\u264c',
     ['July', '23'],
-    ['August', '22'], 
-    'the Sun', 
+    ['August', '22'],
+    'the Sun',
     '\U0001F31E',
     'fire',
     'fixed',
-    colors.get('Brown'))
+    colors.get('Orange'))
 
 virgo = Starsign(
-    'Virgo', 
-    '\u264d', 
-    ['August', '23'], 
-    ['September', '23'], 
-    'Mercury', 
+    'Virgo',
+    '\u264d',
+    ['August', '23'],
+    ['September', '23'],
+    'Mercury',
     '\U0001F680',
     'earth',
     'mutable',
-    colors.get('Orange'))
+    colors.get('Brown'))
 
 libra = Starsign(
-    'Libra', 
-    '\u264e', 
-    ['September', '23'], 
-    ['October', '22'], 
-    'Venus', 
+    'Libra',
+    '\u264e',
+    ['September', '23'],
+    ['October', '22'],
+    'Venus',
     '\U0001F338',
     'air',
     'cardinal',
     colors.get('Pink'))
 
 scorpio = Starsign(
-    'Scorpio', 
-    '\u264f', 
-    ['October', '23'], 
-    ['November', '21'], 
-    'Pluto', 
+    'Scorpio',
+    '\u264f',
+    ['October', '23'],
+    ['November', '21'],
+    'Pluto',
     '\U0001F311',
     'water',
     'fixed',
-    colors.get('Light-Green'))
+    colors.get('Dark-Blue'))
 
 sagittarius = Starsign(
-    'Sagittarius', 
-    '\u2650', 
-    ['November', '22'], 
-    ['December', '21'], 
-    'Jupiter', 
+    'Sagittarius',
+    '\u2650',
+    ['November', '22'],
+    ['December', '21'],
+    'Jupiter',
     '\U0001F4A5',
     'fire',
     'mutable',
-    colors.get('Pink'))
+    colors.get('Purple'))
 
 capricorn = Starsign(
     'Capricorn', 
@@ -136,28 +150,28 @@ capricorn = Starsign(
     '\U0001FA90',
     'earth',
     'cardinal',
-    colors.get('Purple'))
+    colors.get('Salmon'))
 
 aquarius = Starsign(
     'Aquarius',
-    '\u2652', 
+    '\u2652',
     ['January', '20'],
     ['February', '18'],
-    'Uranus', 
+    'Uranus',
     '\U0001F6F8',
     'air',
     'fixed',
-    colors.get('Light-Blue'))
+    colors.get('Blue'))
 
 pisces = Starsign(
-    'Pisces', 
-    '\u2653', 
-    ['February', '19'], 
-    ['March', '19'], 
-    'Neptune', 
+    'Pisces',
+    '\u2653',
+    ['February', '19'],
+    ['March', '19'],
+    'Neptune',
     '\U0001F531',
     'water',
     'mutable',
-    colors.get('Light-Green'))
+    colors.get('Mint'))
 
 signs = [aries, taurus, gemini, cancer, leo, virgo, libra, scorpio, sagittarius, capricorn, aquarius, pisces]
