@@ -1,3 +1,4 @@
+#RGB values for colors
 colors = {'Black':'\033[38;2;51;51;49m',
           'Grey':'\033[38;2;206;208;183m',
           'Red':'\033[38;2;209;74;74m',
@@ -30,7 +31,7 @@ class Starsign:
 
     def __str__(sign):
         return f"{sign.name} season runs from {sign.startmonth} {sign.startday} to {sign.endmonth} {sign.endday}."
-    
+
     def getValue(sign, grouplist, emojidict):
         for groupname, group in grouplist.items():
            for star in group:

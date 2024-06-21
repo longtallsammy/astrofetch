@@ -1,11 +1,11 @@
 [Global]
+#Black, Grey, Red, Orange, Mint, Green, Brown, Yellow, Blue, Purple, Pink, Beige, Salmon, Dark-Blue, White
 textcolor = "default"
 logocolor = "default"
-## Black, Grey, Red, Orange, Mint, Green, Brown, Yellow, Blue, Purple, Pink, Beige, Salmon, Dark-Blue, White
 
 [Entries]
+#separator, user, hostname, userhost, date, os, kernel, shell, machine, de, memory, swap, home, boot, cpu, gpu, ip, season, season-starts, season-ends, season-planet, season-element, season-modality
 custom = []
-## separator, user, hostname, userhost, date, os, kernel, shell, machine, de, memory, swap, home, boot, cpu, gpu, ip, season, season-starts, season-ends, season-planet, season-element, season-modality
 
 ## Defaults: Don't edit these!
 default = [
@@ -14,8 +14,8 @@ default = [
     "date",
     "separator",
     "os",
-    "kernel",
     "uptime",
+    "kernel",
     "shell",
     "de",
     "machine",

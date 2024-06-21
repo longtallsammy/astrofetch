@@ -8,8 +8,13 @@ def getUser():
     return user
 
 def getHost():
-    with open("/etc/hostname", "r") as hostnameFile:
-        host = hostnameFile.read()
+    try:
+        with open("/etc/hostname", "r") as hostnameFile:
+            host = hostnameFile.read()
+    except FileNotFoundError:
+        host = 'Unknown hostname'
+        return host
+
     host = host.strip()
     return host
 
@@ -17,11 +22,11 @@ def getUptime():
     try:
         with open("/proc/uptime") as uptimeFile:
             uptime = uptimeFile.read().split(' ')[0]
-    except:
+    except FileNotFoundError:
         uptime = 'Unknown uptime!'
         return uptime
 
-    rawUptime = round(float(uptime))
+    uptimeSeconds = round(float(uptime))
 
     ONEMIN = 60
     ONEHOUR = 3600
@@ -29,41 +34,42 @@ def getUptime():
     ONEWEEK = 604800
     ONEYEAR = 31556952
 
-    if rawUptime <= ONEMIN:
-        uptimeA = str(rawUptime) + " seconds"
+    if uptimeSeconds <= ONEMIN:
+        uptimeA = ' '.join([str(uptimeSeconds), "seconds"])
         uptimeB = ''
 
-    elif rawUptime <= ONEHOUR:
-        upMinutes = divmod(rawUptime, ONEMIN)
-        uptimeA = str(upMinutes[0]) + " minutes"
+    elif uptimeSeconds <= ONEHOUR:
+        upMinutes = divmod(uptimeSeconds, ONEMIN)
+        uptimeA = ' '.join([str(upMinutes[0]), "minutes"])
         uptimeB = ''
 
-    elif rawUptime <= ONEDAY:
-        upHours = divmod(rawUptime, ONEHOUR)
+    elif uptimeSeconds <= ONEDAY:
+        upHours = divmod(uptimeSeconds, ONEHOUR)
         upMinutes = divmod(upHours[1], ONEMIN)
-        uptimeA = str(upHours[0]) + " hours"
-        uptimeB = str(upMinutes[0]) + " minutes"
+        uptimeA = ' '.join([str(upHours[0]), "hours"])
+        uptimeB = ' '.join([str(upMinutes[0]),  "minutes"])
 
-    elif rawUptime <= ONEWEEK:
-        upDays = divmod(rawUptime, ONEDAY)
+    elif uptimeSeconds <= ONEWEEK:
+        upDays = divmod(uptimeSeconds, ONEDAY)
         upHours = divmod(upDays[1], ONEHOUR)
-        uptimeA = str(upDays[0]) + " days"
-        uptimeB = str(upHours[0]) + " hours"
+        uptimeA = ' '.join([str(upDays[0]), "days"])
+        uptimeB = ' '.join([str(upHours[0]), "hours"])
 
-    elif rawUptime <= ONEYEAR:
-        upWeeks = divmod(rawUptime, ONEWEEK)
+    elif uptimeSeconds <= ONEYEAR:
+        upWeeks = divmod(uptimeSeconds, ONEWEEK)
         upDays = divmod(upWeeks[1], ONEDAY)
-        uptimeA = str(upWeeks[0]) + " weeks"
-        uptimeB = str(upDays[0]) + " days"
+        uptimeA = ' '.join([str(upWeeks[0]), "weeks"])
+        uptimeB = ' '.join([str(upDays[0]), "days"])
 
     else:
-        upYears = divmod(rawUptime, ONEYEAR)
+        upYears = divmod(uptimeSeconds, ONEYEAR)
         upDays = divmod(upYears[1], ONEDAY)
-        uptimeA = str(upYears[0]) + " years"
-        uptimeB = str(upDays[0]) + " days"
+        uptimeA = ' '.join([str(upYears[0]), "years"])
+        uptimeB = ' '.join([str(upDays[0]) + "days"])
 
     totalUptime = [uptimeA, uptimeB]
 
+    #Format result
     count = 0
     for value in totalUptime:
         if value[:2] == '1 ':
@@ -75,7 +81,7 @@ def getUptime():
     if totalUptime[1] == '':
         uptime = str(totalUptime[0])
     else:
-        uptime = str(totalUptime[0]) + ', ' + str(totalUptime[1])
+        uptime = ', '.join([str(totalUptime[0]), str(totalUptime[1])])
 
     return uptime
 
@@ -83,7 +89,7 @@ def getDistro():
     try:
         with open("/etc/os-release") as distroFile:
             distroList = distroFile.read().split("\n")
-    except:
+    except FileNotFoundError:
         distro = 'Unknown distro!'
         return distro
 
@@ -104,7 +110,7 @@ def getKernel():
     try:
         with open("/proc/sys/kernel/osrelease") as kernelFile:
             kernelInfo = kernelFile.read()
-    except:
+    except FileNotFoundError:
         kernelInfo = 'No kernel info found!'
         return kernelInfo
 
@@ -119,7 +125,7 @@ def getKernel():
             case 'hardened':
                 uniqueKernel = '-hardened'
 
-    kernel = kernelVersion + uniqueKernel
+    kernel = ''.join([kernelVersion + uniqueKernel])
 
     return kernel
 
@@ -152,20 +158,21 @@ def getShell():
     shell = os.environ['SHELL']
     shell = shell.split('/')[-1]
 
+    #Get shell version
     match shell:
         case 'bash':
             shell = subprocess.check_output(['bash', '--version']).decode('utf-8').rstrip()
             bashVersion = shell.split(' ')[3]
             bashVersionNumber = bashVersion.split('(')
             shell = bashVersionNumber[0]
-            currentShell = 'bash ' + shell
+            currentShell = ' '.join(['bash' + shell])
         case 'zsh':
             shell = subprocess.check_output(['zsh', '--version']).decode('utf-8').rstrip()
             shell = shell.split(' ')[:-1]
             currentShell = ' '.join(shell)
         case 'fish':
             shell = subprocess.check_output(['fish', '--version']).decode('utf-8').rstrip()
-            currentShell = 'fish ' + shell.split(' ')[-1]
+            currentShell = ' '.join(['fish' + shell.split(' ')[-1]])
         case _:
             currentShell = shell
 
@@ -186,16 +193,16 @@ def getMachineFamily():
                 with open("/sys/devices/virtual/dmi/id/sys_vendor") as vendorIdFile:
                     hardwareId = vendorIdFile.read().strip()
         hardwareId = hardwareId.strip()
-    except:
+    except FileNotFoundError:
         hardwareId = 'Unknown hardware!'
 
     return hardwareId
 
 def getDate():
     fulldate = datetime.datetime.now()
-    month = fulldate.strftime("%B")         # = August
-    day = fulldate.strftime("%d")           # = 27
-    time = fulldate.strftime("%H:%M")       # = 10:45
+    month = fulldate.strftime("%B")#August
+    day = fulldate.strftime("%d")#27
+    time = fulldate.strftime("%H:%M")#10:45
 
     return month, day, time
 
@@ -203,7 +210,7 @@ def getMem(memType):
     try:
         with open("/proc/meminfo") as memoryInfoFile:
             memInfo = memoryInfoFile.read().split()
-    except:
+    except FileNotFoundError:
         memory = 'No memory info found!'
         return memory
 
@@ -214,25 +221,22 @@ def getMem(memType):
         totalMem = memInfo[43]
         availMem = memInfo[46]
 
-    memInfo = [totalMem, availMem]
-    memoryGb = []
+    #Convert to readable units
+    memoryGb = [round(int(totalMem) / 1024000), round(int(availMem) / 1024000, 1)]
 
-    for memValue in memInfo:
-        memValue = round(int(memValue) / 1024000, 1)
-        memoryGb.append(memValue)
-
-    totalMem = round(memoryGb[0])
+    totalMem = memoryGb[0]
     availMem = memoryGb[1]
 
+    #Only show used memory if memory is being used
     if totalMem == round(availMem):
         usedMem = ''
-        totalMem = str(totalMem) + 'GB'
+        totalMem = ''.join([str(totalMem), 'GB'])
     else:
         usedMem = totalMem - availMem
-        totalMem = str(totalMem) + 'GB ('
+        totalMem = ''.join([str(totalMem), 'GB ('])
         usedMem = '%.1f' % usedMem + "G used)"
 
-    memory = totalMem + usedMem
+    memory = ''.join([totalMem, usedMem])
 
     return memory
 
@@ -243,6 +247,7 @@ def getBlockSpace(block):
 
     partInfo = os.statvfs(block)
 
+    #Convert to readable units
     partSizeBytes = partInfo.f_frsize * partInfo.f_blocks
     partFreeBytes = partInfo.f_frsize * partInfo.f_bfree
 
@@ -260,7 +265,7 @@ def getBlockSpace(block):
         partUnit = 'GB'
 
     partUsed = partSize - partFree
-    partSpace = str(partUsed) + partUnit + ' used, ' + str(partFree) + partUnit + ' free'
+    partSpace = ' '.join([str(partUsed) + partUnit, 'used,', str(partFree) + partUnit, 'free'])
 
     return partSpace
 
@@ -275,7 +280,7 @@ def getCpuGpu():
                 if 'model name' in line:
                     cpuInfo = line.split(':')[1]
                     break
-    except:
+    except FileNotFoundError:
         cpuInfo = 'No CPU info found!'
 
     #Check cpu graphics
@@ -299,30 +304,34 @@ def getCpuGpu():
         for pciLine in pciInfo:
             pciLineContents = pciLine.split()
 
+            #Get VGA section of lspci output
             gpuMarkers = ['VGA', '3D controller']
             for marker in gpuMarkers:
                 if marker in pciLineContents:
-                    if 'Integrated' in pciLineContents:
+                    if 'Integrated' in pciLineContents: #ignore it
                         vgaInfo = ''
                         pass
                     else:
                         vgaInfo = pciLine
                         break
 
-        if vgaInfo != '':
+        if vgaInfo != '': #lspci succeeded
             gpuName = ''
             vgaInfo = vgaInfo.split('[')
             for section in vgaInfo:
-                if ':' in section:
+                if ':' in section: #first half, ignore it
                     pass
-                else:
-                    if '(' in section:
+                else: #second half, contains gpu name
+                    if '(' in section: #rev section, ignore it
                         section = section.split('(')[0]
+
+                    #Format gpu name
                     gpuInfo = section.split('/')[0].replace(']', '')
-                    gpuName = gpuName + gpuInfo + ' '
-        elif vgaInfo == '' and gpuName == 'Integrated Graphics':
+                    gpuName = ''.join([gpuName, gpuInfo + ' '])
+
+        elif vgaInfo == '' and gpuName == 'Integrated Graphics': #lspci failed
             pass
-        else:
+        else: #CPU graphics check failed too
             gpuName = 'Unknown GPU'
 
     except:
@@ -335,7 +344,7 @@ def getLocalIp():
     try:
         with open ("/proc/net/fib_trie") as ipInfoFile:
             ipInfo = ipInfoFile.read().split('|')
-    except:
+    except FileNotFoundError:
         localIp = 'No IP info found!'
         return localIp
 
@@ -354,13 +363,13 @@ def getLocalIp():
     return localIp
 
 def getSettings():
-    #Check config file exists
     configFile = 'astrofetch.toml'
     srcDir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
     parentDir = os.path.abspath(os.path.join(srcDir, os.pardir))
     configFile = os.path.abspath(os.path.join(parentDir, configFile))
     cantReadErr = 'astrofetch: cannot read config file'
 
+    #Check config file exists
     if not os.path.exists(configFile):
         print(cantReadErr)
         exit(configFile + ': file not found')
@@ -368,9 +377,12 @@ def getSettings():
     try:
         with open(configFile, "rb") as settingsFile:
             settings = tomllib.load(settingsFile)
-    except:
+    except tomllib.TOMLDecodeError:
         print(cantReadErr)
         exit(configFile + ': incorrect format')
+    except FileNotFoundError:
+        print(cantReadErr)
+        exot(configFile + ': file not found')
 
     globals = settings['Global']
     ruleset = settings['Entries']

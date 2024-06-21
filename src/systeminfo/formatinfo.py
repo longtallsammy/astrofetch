@@ -7,17 +7,16 @@ configErrMsg = ("astrofetch: error in config file '" + configFile + "'")
 configInvalidMsg = (configFile + ": invalid entry '")
 
 month, day, time = findinfo.getDate()
-date = (month + ' ' + day + ', ' + time + ' ')
+date = ' '.join([month, day + ',', time])
 
 def boldenText(text, color):
-    text = color + '\033[1m' + text + '\033[0m'
+    text = ''.join([color + '\033[1m' + text + '\033[0m'])
     return text
 
 def largeFormat(sign):
     #Get settings, process globals
     ruleset, globalSettings = findinfo.getSettings()
-    textColorSetting = globalSettings[0]
-    logoColorSetting = globalSettings[1]
+    textColorSetting, logoColorSetting = globalSettings[0], globalSettings[1]
 
     textColor = sign.color
 
@@ -60,22 +59,22 @@ def largeFormat(sign):
         'Modality: ': sign.modality.title()
     }
 
-    #Process user settings (fields), format it
+    #Process user settings
     largeFormatInfo = []
     dashlineLength = 0
 
     for item in ruleset:
         if item in ['cpu', 'gpu', 'ip', 'de', 'os']:
-            item = item.upper() + ': '
+            item = ''.join([item.upper(), ': '])
         else:
-            item = item.replace('season-', '').title() + ': '
+            item = ''.join([item.replace('season-', '').title(), ': '])
 
         if item in systemInfo.keys():
-            #separator length
+            #assign separator length
             itemLength = len(item + systemInfo.get(item))
             if itemLength >= dashlineLength:
                 dashlineLength = itemLength + 1
-            #color
+            #assign color
             entry = boldenText(item, textColor) + systemInfo.get(item)
             largeFormatInfo.append(entry)
         else:
@@ -84,35 +83,26 @@ def largeFormat(sign):
                 case 'Separator: ':
                     largeFormatInfo.append(item)
                 case 'Userhost: ':
-                    userhost = (systemInfo.get('User: ') + '@' + systemInfo.get('Hostname: '))
+                    userhost = '@'.join([systemInfo.get('User: '), systemInfo.get('Hostname: ')])
                     largeFormatInfo.append(boldenText(userhost, textColor))
                 case _:
                     print(configErrMsg)
                     exit(configInvalidMsg + item.lower()[:-2] + "'")
 
     #separators
-    i = 0
+    count = 0
     for item in largeFormatInfo:
         if item == 'Separator: ':
-            largeFormatInfo[i] = '-' * dashlineLength
-        i = i + 1
+            largeFormatInfo[count] = '-' * dashlineLength
+        count = count + 1
 
     return largeFormatInfo
 
 def smallFormat(sign, useUnicode):
     if not useUnicode:
-        formattedSystemInfo = (
-            time +
-            ' ' +
-            str(month + ' ' + day) +
-            ', ' +
-            sign.name +
-            ' season.')
+        formattedSystemInfo = ' '.join([date + ',', sign.name, 'season.'])
     else:
-        formattedSystemInfo = (
-            time +
-            ' ' +
-            sign.emoji)
+        formattedSystemInfo = ' '.join([time + ' ' + sign.emoji])
 
     return formattedSystemInfo
 
