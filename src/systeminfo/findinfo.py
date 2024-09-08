@@ -200,7 +200,7 @@ def getMachineFamily():
         hardwareId = ''
 
     if hardwareId == '':
-        hardwareId = 'Unknown Plaform'
+        hardwareId = 'Unknown Platform'
 
     return hardwareId
 
