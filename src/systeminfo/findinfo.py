@@ -12,7 +12,10 @@ def getHost():
         with open("/etc/hostname", "r") as hostnameFile:
             host = hostnameFile.read()
     except FileNotFoundError:
-        host = 'Unknown hostname'
+        host = ""
+
+    if host == "":
+        host = "localhost"
         return host
 
     host = host.strip()
@@ -96,14 +99,15 @@ def getDistro():
     NAME1 = distroList[0]
     NAME2 = distroList[1]
 
-    if NAME1[:6] == "PRETTY":
-        distro = NAME2
-    elif NAME1[:3] == "BUG": #nix-specific
-        distro = NAME1[-22:-15]
-    else:
-        distro = NAME1
+    if 'NixOS' in NAME1:
+        distro = "Nix OS"
+        return distro
 
-    distro = distro.replace('NAME=', '')[1:-1]
+    if 'Ubuntu' in NAME1 or 'Ubuntu' in NAME2:
+        distro = "Ubuntu"
+        return distro
+
+    distro = NAME1.replace('NAME=', '')[1:-1]
     return distro
 
 def getKernel():
@@ -111,7 +115,7 @@ def getKernel():
         with open("/proc/sys/kernel/osrelease") as kernelFile:
             kernelInfo = kernelFile.read()
     except FileNotFoundError:
-        kernelInfo = 'No kernel info found!'
+        kernelInfo = 'Linux Kernel'
         return kernelInfo
 
     kernelInfo = kernelInfo.strip().split('-')
@@ -126,7 +130,6 @@ def getKernel():
                 uniqueKernel = '-hardened'
 
     kernel = ''.join([kernelVersion + uniqueKernel])
-
     return kernel
 
 def getDesktopEnv():
@@ -186,15 +189,18 @@ def getMachineFamily():
         if hardwareId == 'To be filled by O.E.M.':
             with open("/sys/devices/virtual/dmi/id/board_name") as boardIdFile:
                 hardwareId = boardIdFile.read().strip()
-            if hardwareId[-1] == ')':
+            if hardwareId != '':
                 hardwareId = hardwareId.split('(')[0]
                 hardwareId = hardwareId.lower().title()
-            elif hardwareId == '':
+            else:
                 with open("/sys/devices/virtual/dmi/id/sys_vendor") as vendorIdFile:
                     hardwareId = vendorIdFile.read().strip()
         hardwareId = hardwareId.strip()
     except FileNotFoundError:
-        hardwareId = 'Unknown hardware!'
+        hardwareId = ''
+
+    if hardwareId == '':
+        hardwareId = 'Unknown Plaform'
 
     return hardwareId
 
