@@ -1,4 +1,8 @@
 import sys
+import platform
+
+if platform.system() != 'Linux':
+    exit("Astrofetch is only supported on Linux!")
 
 requiredMajor = 3
 requiredMinor = 11
