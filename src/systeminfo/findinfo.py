@@ -388,7 +388,7 @@ def getSettings():
         exit(configFile + ': incorrect format')
     except FileNotFoundError:
         print(cantReadErr)
-        exot(configFile + ': file not found')
+        exit(configFile + ': file not found')
 
     globals = settings['Global']
     ruleset = settings['Entries']
@@ -401,6 +401,9 @@ def getSettings():
 
     #Assign ruleset
     if customRuleset:
+        if len(customRuleset) > 18:
+            print(cantReadErr)
+            exit(configFile + ': Cannot use custom ruleset with more than 18 items.')
         ruleset = customRuleset
     else:
         ruleset = defaultRuleset
